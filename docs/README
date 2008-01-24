@@ -19,8 +19,8 @@ It should run on any PHP server (v4.2+), and can support OpenID in 'Smart Mode.'
 This program caches all data using built-in PHP session handling, so it requires
 no database, and no explicit write access to the file system.
 
-phpMyID is NOT compatible with Suhosin or other hardened PHP systems (Debian
-users take note).
+OpenID-LDAP-PHP is NOT compatible with Suhosin or other hardened PHP systems 
+(Debian users take note).
 
 NOTE: User authentication is done using HTTP Basic authentication, so your 
       password is transmitted over the wire in plain text, base64 encoded. Thus 
