@@ -60,6 +60,8 @@ that you use a server that you own and control.
 
      engine.php		The application library
 
+     showme.php		Username to URL redirection library
+
      index.php		This is the file you'll be visiting in your browser
 
      ldap.php		The LDAP-link library, contains creds, and options
