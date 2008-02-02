@@ -35,6 +35,7 @@ $GLOBALS['known'] = array(
 				 'id_res',
 				 'login',
 				 'logout',
+				 'sendsreg',
 			 	 'test'),
 
 	'session_types'	=> array('',
@@ -98,6 +99,42 @@ function accept_mode () {
 	$no  = wrap_param($profile['req_url'],'accepted=no');
 
 	wrap_html('The client site you are attempting to log into has requested that you trust the following URL:<br/><b>' . $_SESSION['unaccepted_url'] . '</b><br/><br/>Do you wish to continue?<br/><a href="' . $yes . '">Yes</a> | <a href="' . $no . '">No</a>');
+}
+
+/**
+ * Allow the user to accept sending of a SREG
+ * @global array $profile
+ */
+function sendsreg_mode () {
+	global $profile;
+
+	// this is a user session
+	user_session();
+
+	// the user needs refresh urls in their session to access this mode
+	if (! isset($_SESSION['post_accept_url']) || ! isset($_SESSION['cancel_accept_url']) || ! isset($_SESSION['unaccepted_sreg']))
+		error_500('You may not access this mode directly.');
+
+	// has the user accepted the trust_root?
+	$accepted = @strlen($_REQUEST['allowed'])
+			? $_REQUEST['allowed']
+			: null;
+
+	// if so, refresh back to post_accept_url
+	if ($accepted === 'yes') {
+		$_SESSION['accepted_sreg'] = $_SESSION['unaccepted_sreg'];
+		wrap_refresh($_SESSION['post_accept_url']);
+
+	// if they rejected it, return to the client
+	} elseif ($accepted === 'no') {
+		wrap_refresh($_SESSION['cancel_accept_url']);
+	}
+
+	// if neither, offer the trust request
+	$yes = wrap_param($profile['req_url'],'allowed=yes');
+	$no  = wrap_param($profile['req_url'],'allowed=no');
+
+	wrap_html('The client site you have just logged into has requested that you send registration info:<br/><b>' . $_SESSION['unaccepted_sreg'] . '</b><br/><br/>Do you wish to continue?<br/><a href="' . $yes . '">Yes</a> | <a href="' . $no . '">No</a>');
 }
 
 /** * Perform an association with a consumer
@@ -468,6 +505,20 @@ function checkid ( $wait ) {
 
 	// the user is logged in
 	} else {
+		// transfer the user to the sreg accept mode if they're paranoid
+		if ($profile['paranoid'] === true && $sreg_required != "," && (! session_is_registered('accepted_sreg') || $_SESSION['accepted_sreg'] != $sreg_required)) {
+			$_SESSION['cancel_accept_url'] = $return_to;
+			$_SESSION['post_accept_url'] = $profile['req_url'];
+			$_SESSION['unaccepted_sreg'] = $sreg_required;
+
+			debug('Transferring to sreg acceptance mode.');
+			debug('Cancel URL: ' . $_SESSION['cancel_accept_url']);
+			debug('Post URL: ' . $_SESSION['post_accept_url']);
+			debug('SREG fields: ' . $_SESSION['unaccepted_sreg']);
+
+			wrap_refresh(wrap_param($profile['idp_url'],'openid.mode=sendsreg'));
+		}
+
 		// remove the refresh URLs if set
 		unset($_SESSION['cancel_auth_url']);
 		unset($_SESSION['post_auth_url']);
