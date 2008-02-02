@@ -106,7 +106,7 @@ function accept_mode () {
  * @global array $profile
  */
 function sendsreg_mode () {
-	global $profile;
+	global $profile, $sreg;
 
 	// this is a user session
 	user_session();
@@ -134,7 +134,18 @@ function sendsreg_mode () {
 	$yes = wrap_param($profile['req_url'],'allowed=yes');
 	$no  = wrap_param($profile['req_url'],'allowed=no');
 
-	wrap_html('The client site you have just logged into has requested that you send registration info:<br/><b>' . $_SESSION['unaccepted_sreg'] . '</b><br/><br/>Do you wish to continue?<br/><a href="' . $yes . '">Yes</a> | <a href="' . $no . '">No</a>');
+        $tokens = '';
+        $sregs  = $_SESSION['unaccepted_sreg'];
+
+        // Add the sreg stuff, if we've got it
+        foreach (explode(',', $sregs) as $key) {
+                if (! isset($sreg[$key]))
+                        continue;
+
+                $tokens .= sprintf("<tr><td>%s:</td><td>%s</td></tr>", $key, $sreg[$key]);
+        }
+
+        wrap_html('The client site you just have logged into has requested that you provide a registration info:<br/><b>' . $_SESSION['unaccepted_url'] . '</b><br/><table bgcolor=#f9f8f7>' . $tokens . '</table><br/>Do you allow the transfer?<br/><a href="' . $yes . '">Yes</a> | <a href="' . $no . '">No</a>');
 }
 
 /** * Perform an association with a consumer
