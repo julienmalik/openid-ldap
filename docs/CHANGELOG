@@ -13,7 +13,8 @@ CHANGE LOG
 
 Version 0.8.4
 - Modified username field on home page usage; javascript was replaced
-  with form.post and new page was added as post target.
+  with form.post and new page was added as post target. Added new mode
+  for confirming SREG transfers.
 
 Version 0.8.3
 - Merged with all phpMyID version 0.8 changes. Added SREG to LDAP field
