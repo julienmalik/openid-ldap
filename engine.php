@@ -134,19 +134,18 @@ function sendsreg_mode () {
 	$yes = wrap_param($profile['req_url'],'allowed=yes');
 	$no  = wrap_param($profile['req_url'],'allowed=no');
 
-        $tokens = '';
-        $sregs  = $_SESSION['unaccepted_sreg'];
+        $sregs = $_SESSION['unaccepted_sreg'];
 
         // Add the sreg stuff, if we've got it
+	$tokens = '';
         foreach (explode(',', $sregs) as $key) {
                 if (! isset($sreg[$key]))
                         continue;
 
                 $tokens .= sprintf("<tr><td>%s:</td><td>%s</td></tr>", $key, $sreg[$key]);
         }
-	if ($tokens != "") {
-		$tokens = '<table bgcolor=#E9E8E7><tr><td colspan="2" align="center"><font color="green">Registration info details</font></td></tr>' . $tokens . '</table>';
-	}
+	if ($tokens != "")
+		$tokens = sprintf('<table bgcolor=#E9E8E7><tr><td colspan="2" align="center"><font color="green">Registration info details</font></td></tr>%s</table>',$tokens);
 
         wrap_html('The client site you just have logged into has requested that you provide a registration info:<br/><b>' . $_SESSION['unaccepted_url'] . '</b><br/>' . $tokens . '<br/>Do you allow the transfer?<br/><a href="' . $yes . '">Yes</a> | <a href="' . $no . '">No</a>');
 }
