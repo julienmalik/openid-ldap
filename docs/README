@@ -70,12 +70,16 @@ that you use a server that you own and control.
      
    - into images directory:
    
-     logo.gif		The OpenID logo and text on white background
+     logo.gif		The OpenID logo and text, plus LDAP, on white background
    
      openid.ico		A small OpenID logo icon (can be placed in root folder
                         and renamed to "favicon.ico", see * notes bellow)
    
-     openid.gif		A small OpenID logo image
+     openid.gif		The OpenID logo on white background
+   
+     openid.png		The OpenID logo with transparent background
+   
+     openid-logo.gif	The OpenID logo and text on white background
    
      user.gif		A small person image
    
