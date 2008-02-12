@@ -184,15 +184,27 @@ that you use a server that you own and control.
    features and put these settings into your ssl.conf file - in general host
    section, or in some virtual host one, depending of your configuration.
 
+   First, you might want (highly recommended) to redirect all non-SSL requests
+   via SSL. Add this to your "httpd.conf" file:
+
+   RewriteEngine On
+
+   RewriteRule   ^/dir$         https://host/dir/      [R=permanent,L]
+   RewriteRule   ^/dir/$        https://host/dir/      [R=permanent,L]
+   RewriteRule   ^/dir/(.*)$    https://host/dir/$1    [R=permanent,L]
+
+   Next, add this to your "ssl.conf" file to proxy usernames to internally 
+   processed requests to index.php script:
+
    SSLProxyEngine On
    RewriteEngine On
 
    RewriteCond %{REQUEST_URI}      !^/(.+)\.php(.*)$
    RewriteCond %{THE_REQUEST}      ^[A-Z]{3,9}\ /dir/([A-Za-z0-9]+)\?(.*)\ HTTP/
-   RewriteRule ^/dir/(.*)$         https://host/dir/index.php?user=%1&%2   [P,L]
+   RewriteRule ^/dir/(.*)$         https://host/dir/index.php?user=%1&%2    [P]
 
-   RewriteCond %{REQUEST_URI}        !^/(.+)\.php(.*)$
-   RewriteRule ^/dir/([A-Za-z0-9]+)$ https://host/dir/index.php?user=$1    [P,L]
+   RewriteCond %{REQUEST_URI}         !^/(.+)\.php(.*)$
+   RewriteRule ^/dir/([A-Za-z0-9]+)$  https://host/dir/index.php?user=$1    [P]
    
    Make sure you replace 'host' and 'dir' above with corresponding values from
    your setup (i.e. 'yourdomain.com' and 'some/path', for example).
@@ -284,16 +296,16 @@ Several other configuration keys exist and can be set in the 'profile' array:
 # OPTIONAL CONFIG KEYS
 ######################
 
-'microid'	If you would like phpMyID to assert your ownership via MicroID
-		tags, you can configure this key (either as a string or an
+'microid'	If you would like OpenID-LDAP-PHP to assert your ownership via 
+		MicroID tags, you can configure this key (either as a string or an
 		array). Any values must be complete URLs to the asserted owner.
 		One suggestion is to enter the value of the URL you are
 		delegating from (installation step 7). You can also use your
 		email address. In either case, be sure to prefix your URL
 		correctly with "mailto:" or "http://" etc...
 
-'pavatar'	If you would like phpMyID to assert your ownership of a Pavatar
-		by embedding an optional image tag into its HTML document
+'pavatar'	If you would like OpenID-LDAP-PHP to assert your ownership of a 
+		Pavatar by embedding an optional image tag into its HTML document
 		header, you can configure this key. The value set should be a
 		complete URL to your Pavatar image. See http://pavatar.com
 		for more information.
@@ -305,8 +317,8 @@ Several other configuration keys exist and can be set in the 'profile' array:
 
 'paranoid'	Part of the OpenID specification requires clients to ask the
 		identity servers to trust a specific root URL for all identity
-		transactions. phpMyID ignores this requirement by default in
-		favor of a speedier and more fluid login for users, however,
+		transactions. OpenID-LDAP-PHP ignores this requirement by default
+		in favor of a speedier and more fluid login for users, however,
 		you can a "paranoid" mode that will allow you to receive prompts
 		to trust each client as you log in to them.
 
@@ -344,8 +356,8 @@ TROUBLESHOOTING
 
    Suhosin is a security add-on for PHP which, amongst other things, removes
    PHP's ability to open and access multiple sessions at one time. Simply put,
-   phpMyID is reliant upon this feature, and will therefore not work with a
-   hardened PHP.
+   OpenID-LDAP-PHP is reliant upon this feature, and will therefore not work with
+   a hardened PHP.
 
    There is currently no workaround.
 
@@ -381,15 +393,15 @@ TROUBLESHOOTING
 
    If your ServerName is set to one value (in your webserver configuration)
    and you regularly access it with something else (say, an alias or w / w/o a
-   www on the front of it), phpMyID may get confused.
+   www on the front of it), OpenID-LDAP-PHP may get confused.
 
    The easiest way to remedy this situation is to explicitly set the "idp_url"
    key in your profile array. The value should be the exact, complete URL, to
-   your installation of phpMyID.
+   your installation of OpenID-LDAP-PHP.
 
 	$GLOBALS['profile'] = array(
 		...
-		'idp_url' => 'http://phpmyid.com/index.php',
+		'idp_url' => 'http://yoursite.com/index.php',
 		...
 		);
 
