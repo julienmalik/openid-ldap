@@ -472,7 +472,7 @@ function checkid ( $wait ) {
 
 	// transfer the user to the url accept mode if they're paranoid
 	if ($profile['paranoid'] === true && (! session_is_registered('accepted_url') || $_SESSION['accepted_url'] != $trust_root)) {
-		$_SESSION['cancel_accept_url'] = $return_to;
+		$_SESSION['cancel_accept_url'] = wrap_param($return_to,'openid.mode=cancel');
 		$_SESSION['post_accept_url'] = $profile['req_url'];
 		$_SESSION['unaccepted_url'] = $trust_root;
 
@@ -520,7 +520,7 @@ function checkid ( $wait ) {
 	} else {
 		// transfer the user to the sreg accept mode if they're paranoid
 		if ($profile['paranoid'] === true && $sreg_required != "," && (! session_is_registered('accepted_sreg') || $_SESSION['accepted_sreg'] != $sreg_required)) {
-			$_SESSION['cancel_accept_url'] = $return_to;
+			$_SESSION['cancel_accept_url'] = wrap_param($return_to,'openid.mode=cancel');
 			$_SESSION['post_accept_url'] = $profile['req_url'];
 			$_SESSION['unaccepted_sreg'] = $sreg_required;
 
