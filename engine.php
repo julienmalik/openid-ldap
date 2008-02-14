@@ -1572,7 +1572,8 @@ function url_descends ( $child, $parent ) {
 	$pr_host = strtolower(strrev($parts['parent']['host']));
 
 	$break = str_diff_at($cr_host, $pr_host);
-	if ($break >= 0 && ($pr_host[$break] != '*' || substr_count($pr_host, '.', 0, $break) < 2))
+	$number_of_dots = preg_match_all('/(\.)/', $pr_host, $chunks);
+        if ($break >= 0 && ($pr_host[$break] != '*' || $number_of_dots < 2))
 		return false;
 
 	// now compare the paths
