@@ -19,6 +19,7 @@ $GLOBALS['ldap'] = array (
 	# Connection settings
 	'primary'		=> '10.0.0.111',
 	'fallback'		=> '10.0.0.222',
+	'protocol'		=> 3,
 	'binddn'		=> 'cn=<name>,cn=users,dc=domain,dc=local',
 	'password'		=> '<pass>',
 	'searchdn'		=> 'cn=users,dc=domain,dc=local',
@@ -51,6 +52,7 @@ function find_ldap ($username) {
         if ($username != "") {
                 $ds = ldap_connect($ldap['primary']) or $ds = ldap_connect($ldap['fallback']);
                 if ($ds) {
+								ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION,$ldap['protocol']);
                         $r = ldap_bind($ds,$ldap['binddn'],$ldap['password']);
                         $sr = ldap_search($ds,$ldap['searchdn'],sprintf($ldap['filter'],$username));
                         $info = ldap_get_entries($ds, $sr);
