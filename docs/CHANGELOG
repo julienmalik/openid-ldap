@@ -11,6 +11,11 @@ See LICENSE file for more details.
 CHANGE LOG
 **********
 
+Version 0.8.5
+- Added LDAP protocol setting. Fixed Cancel URL Accept mode with missing
+  openid.mode param. Fixed invalid trust root dots counter. Updated the
+  mod_rewrite section in README file. Changed logo.gif image.
+
 Version 0.8.4
 - Modified username field on home page usage; javascript was replaced
   with post form and new page was added as post target. Added new mode
