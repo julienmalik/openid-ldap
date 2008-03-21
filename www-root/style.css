@@ -11,3 +11,17 @@
   background: #FFFFFF url('images/user.gif') no-repeat scroll 0pt 50%; 
   padding-left: 18px;
 }
+
+#login {
+  background-color:#FFFFFF;
+  border:1px solid #CCCCCC;
+  color:#000044;
+  padding:1px;
+  text-decoration:none;
+  background: #FFFFFF url('images/user.gif') no-repeat scroll 0pt 50%;
+  padding-left: 18px;
+}
+
+#login:hover {
+    background-color:#FFF0D0;
+}
