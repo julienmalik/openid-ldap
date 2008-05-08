@@ -20,8 +20,10 @@ $GLOBALS['ldap'] = array (
 	'primary'		=> '10.0.0.111',
 	'fallback'		=> '10.0.0.222',
 	'protocol'		=> 3,
+	# Binding account
 	'binddn'		=> 'cn=<name>,cn=users,dc=domain,dc=local',
 	'password'		=> '<pass>',
+	# Searching data
 	'searchdn'		=> 'cn=users,dc=domain,dc=local',
 	'filter'		=> '(&(cn=%s)(mail=*))',
 	'testdn'		=> 'cn=%s,cn=users,dc=domain,dc=local',
