@@ -218,12 +218,23 @@ that you use a server that you own and control.
    $ chmod 640 ldap.php
 
 
-*) Using favicon.ico in your webserver root folder could require a change to
+*) Additional notes:
+
+ - Using favicon.ico in your webserver root folder could require a change to
    your apache.conf file. Add this line to it, if its not there already:
 
    AddType image/x-icon .ico
 
    then restart the httpd service and reload the page in your browser.
+
+ - Running PHP under Windows, by default, stores sessions in a directory called
+   "sessions" in the PHP directory. However, this directory doesn't exist in the
+   distribution, and it won't be created, so sessions fail and OpenID-LDAP-PHP 
+   won't allow logins. So for phpmyid to work, an empty directory called "sessions"
+   needs to be created in the php installation directory.
+
+ - Connecting to Active Directory is enabled by default and could be disabled by
+   setting $ldap['isad'] setting to 'false'.
 
 
 #####
