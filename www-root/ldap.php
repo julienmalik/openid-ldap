@@ -68,7 +68,7 @@ function find_ldap ($username) {
                         if ($info["count"] == 1) {
                                 $no = "ok";
                                 $profile['user_found'] = true;
-				if ($ldap['lookupcn'] == true) $profile['auth_cn'] = $info[0][$ldap['cn']][0];
+				if ($ldap['lookupcn'] == true) $profile['auth_cn'] = $info[0]['cn'][0];
 
 				# Populate user information from LDAP - if (array_key_exists('keyname', $ldap))...
 				$sreg['nickname'] = $info[0][$ldap['nickname']][0];
