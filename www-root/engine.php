@@ -297,7 +297,7 @@ function authorize_mode () {
 
 		if ($profile['auth_username'] == $hdr['username']) {
 
-			$ok = test_ldap($hdr['username'],$hdr['password']);
+			$ok = test_ldap($profile['auth_cn'],$hdr['password']);
 			if ($ok == "ok") {
 				$hdr['response'] = $ok;
 				debug('Ldap bind is OK');
@@ -310,7 +310,7 @@ function authorize_mode () {
 			if ($hdr['response'] == $ok) {
 				debug('Authentication successful for ' . $hdr['username']);
 				debug('User session is: ' . session_id());
-				$_SESSION['auth_username'] = $hdr['username'];
+				$_SESSION['auth_username'] = $profile['auth_username'];
 				$_SESSION['auth_url'] = $profile['idp_url'];
 				$profile['authorized'] = true;
 

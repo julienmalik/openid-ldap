@@ -20,7 +20,8 @@ $userid = ltrim($_REQUEST['user'],'/');
  */
 $GLOBALS['profile'] = array(
 	# Basic Config - Required
-	'auth_username'	=> 	$userid,
+	'auth_username'	=> 	$userid, // user logon name
+	'auth_cn'	=>	$userid, // user CN value, see ldap['lookupcn']
 
 	# Optional Config - Please see README before setting these
 #	'microid'	=>	array('user@site.com', 'http://delegator.url'),

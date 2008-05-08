@@ -20,13 +20,17 @@ $GLOBALS['ldap'] = array (
 	'primary'		=> '10.0.0.111',
 	'fallback'		=> '10.0.0.222',
 	'protocol'		=> 3,
+	# AD specific
+	'isad'			=> true, // are we connecting to Active Directory?
+	'lookupcn'		=> true, // should we extract CN after the search?
 	# Binding account
 	'binddn'		=> 'cn=<name>,cn=users,dc=domain,dc=local',
 	'password'		=> '<pass>',
+	# User account
+	'testdn'		=> 'cn=%s,cn=users,dc=domain,dc=local',
 	# Searching data
 	'searchdn'		=> 'cn=users,dc=domain,dc=local',
-	'filter'		=> '(&(cn=%s)(mail=*))',
-	'testdn'		=> 'cn=%s,cn=users,dc=domain,dc=local',
+	'filter'		=> '(&(objectCategory=user)(mail=*)(sAMAccountName=%s))',
 
 	# SREG names matching to LDAP attribute names
 	'nickname'		=> 'uid',
@@ -54,14 +58,17 @@ function find_ldap ($username) {
         if ($username != "") {
                 $ds = ldap_connect($ldap['primary']) or $ds = ldap_connect($ldap['fallback']);
                 if ($ds) {
-								ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION,$ldap['protocol']);
+			ldap_set_option($ds,LDAP_OPT_PROTOCOL_VERSION,$ldap['protocol']);
+			if ($ldap['isad'] == true) ldap_set_option($ds,LDAP_OPT_REFERRALS,0);
+
                         $r = ldap_bind($ds,$ldap['binddn'],$ldap['password']);
-                        $sr = ldap_search($ds,$ldap['searchdn'],sprintf($ldap['filter'],$username));
-                        $info = ldap_get_entries($ds, $sr);
+            		$sr = ldap_search($ds,$ldap['searchdn'],sprintf($ldap['filter'],$username));
+			$info = ldap_get_entries($ds, $sr);
 
                         if ($info["count"] == 1) {
                                 $no = "ok";
                                 $profile['user_found'] = true;
+				if ($ldap['lookupcn'] == true) $profile['auth_cn'] = $info[0][$ldap['cn']][0];
 
 				# Populate user information from LDAP - if (array_key_exists('keyname', $ldap))...
 				$sreg['nickname'] = $info[0][$ldap['nickname']][0];
@@ -95,7 +102,6 @@ function find_ldap ($username) {
  */
 function test_ldap ($username, $password) {
 	global $ldap;
-
         $no = "no";
         if ($username != "") {
                 $ds = ldap_connect($ldap['primary']) or $ds = ldap_connect($ldap['fallback']);
@@ -120,6 +126,32 @@ function test_ldap ($username, $password) {
 	array('userpassword' => "{MD5}".base64_encode(pack("H*",md5($newpass))) { 
 	print "succeded"; } else { print "failed"; }
   print ".</p>\n";
+  
+
+  
++    private String detectActiveDirectory( IRootDSE rootDSE )
++    {
++
++        String result = null;
++
++        // check active directory
++        IAttribute rdncAttribute = rootDSE.getAttribute( "rootDomainNamingContext" );
++        if ( rdncAttribute != null )
++        {
++            IAttribute ffAttribute = rootDSE.getAttribute( "forestFunctionality" );
++            if ( ffAttribute != null )
++            {
++                result = "Microsoft Active Directory 2003";
++            }
++            else
++            {
++                result = "Microsoft Active Directory 2000";
++            }
++        }
++
++        return result;
++    }
+  
 */
 
 ?>
