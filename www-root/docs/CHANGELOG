@@ -11,6 +11,11 @@ See LICENSE file for more details.
 CHANGE LOG
 **********
 
+Version 0.8.6
+- Added Login form field styling. Added ActiveDirectory connect flag and
+  CN attribute lookup after search flag. Added some Windows usage notes.
+  Added favorite icon html head code. Integrated pre-0.9 phpMyID changes.
+
 Version 0.8.5
 - Added LDAP protocol setting. Fixed Cancel URL Accept mode with missing
   openid.mode param. Fixed invalid trust root dots counter. Updated the
