@@ -24,7 +24,7 @@ $GLOBALS['profile'] = array(
 	'auth_cn'	=>	$userid, // user CN value, see ldap['lookupcn']
 
 	# Optional Config - Please see README before setting these
-#	'microid'	=>	array('mailto:user@site.com', 'http://delegator.url'),
+#	'microid'	=>	array('mailto:user@site', 'http://delegator'),
 #	'pavatar'	=>	'http://your.site.com/path/pavatar.img',
 
 	# Advanced Config - Please see README before setting these

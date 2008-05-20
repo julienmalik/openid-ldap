@@ -363,6 +363,12 @@ REALLY ADVANCED CONFIG KEYS
 TROUBLESHOOTING
 ###############
 
+*) Can't log in while running OpenID-LDAP-PHP under IIS
+
+   By default, PHP for Windows ships in such a way that sessions do not work 
+   correctly out of the box. You will need to create a folder called "sessions"
+   in your PHP installation directory.
+
 *) Received error: "This site is not compatible with 'suhosin'"
 
    Suhosin is a security add-on for PHP which, amongst other things, removes
@@ -370,7 +376,10 @@ TROUBLESHOOTING
    OpenID-LDAP-PHP is reliant upon this feature, and will therefore not work with
    a hardened PHP.
 
-   There is currently no workaround.
+   Some users have reported successfully using OpenID-LDAP-PHP with suhosin, 
+	either by modifying the script, or using an alternate webserver (such as 
+	lighttpd). These solutions are unsupported. There is currently no official 
+	support for OpenID-LDAP-PHP with suhosin.
 
 
 *) Received error: "Missing expected authorization header."
