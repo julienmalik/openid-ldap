@@ -258,7 +258,7 @@ function authorize_mode () {
 	// try to get the digest headers - what a PITA!
 	if (function_exists('apache_request_headers') && ini_get('safe_mode') == false) {
 		$arh = apache_request_headers();
-		$hdr = $arh['Authorization'];
+		$hdr = isset($arh['Authorization']) ? $arh['Authorization'] : null;
 
 	} elseif (isset($_SERVER['PHP_AUTH_DIGEST'])) {
 		$hdr = $_SERVER['PHP_AUTH_DIGEST'];
@@ -268,6 +268,9 @@ function authorize_mode () {
 
 	} elseif (isset($_ENV['PHP_AUTH_DIGEST'])) {
 		$hdr = $_ENV['PHP_AUTH_DIGEST'];
+
+	} elseif (isset($_SERVER['Authorization'])) {
+		$hdr = $_SERVER['Authorization'];
 
 	} elseif (isset($_REQUEST['auth'])) {
 		$hdr = stripslashes(urldecode($_REQUEST['auth']));
@@ -290,7 +293,7 @@ function authorize_mode () {
 		// base64-encoded concatenation of the username, a colon, and the password
 		list($hdr['username'], $hdr['password']) = explode(':',base64_decode($digest));
 		
-		debug($hdr, 'Parsed digest headers:');
+		debug($hdr, 'Parsed basic auth headers:');
 
 		if (! isset($_SESSION['failures']))
 			$_SESSION['failures'] = 0;
@@ -317,27 +320,30 @@ function authorize_mode () {
 				// return to the refresh url if they get in
 				wrap_refresh($_SESSION['post_auth_url']);
 
-			// too many failures
-			} elseif (strcmp($hdr['nc'], 4) > 0 || $_SESSION['failures'] > 4) {
-				debug('Too many password failures');
-				error_get($_SESSION['cancel_auth_url'], 'Too many password failures. Double check your authorization realm. You must restart your browser to try again.');
-
 			// failed login
 			} else {
 				$_SESSION['failures']++;
 				debug('Login failed for ' . $hdr['username']);
 				debug('Fail count: ' . $_SESSION['failures']);
 			}
+
+		} else {
+			$_SESSION['failures']++;
+			debug('Bad username: ' . $hdr['username']);
+			debug('Fail count: ' . $_SESSION['failures']);
 		}
 
-	} elseif (is_null($digest) && $profile['authorized'] === false && isset($_SESSION['uniqid'])) {
+		// does this make too many failures?
+		if ($_SESSION['failures'] > 4) {
+			debug('Too many password failures');
+			error_get($_SESSION['cancel_auth_url'], 'Too many password failures. Double check your authorization realm. You must restart your browser to try again.');
+		}
+
+	} elseif (is_null($digest) && $profile['authorized'] === false) {
 		error_500('Missing expected authorization header.');
 	}
 
 	// if we get this far the user is not authorized, so send the headers
-	$uid = uniqid(mt_rand(1,9));
-	$_SESSION['uniqid'] = $uid;
-
 	debug('Prompting user to log in.');
 	header('HTTP/1.0 401 Unauthorized');
 	header(sprintf('WWW-Authenticate: Basic realm="%s"', $profile['auth_realm']));
@@ -394,7 +400,8 @@ function check_authentication_mode () {
 	}
 
 	// Add the sreg stuff, if we've got it
-	foreach (explode(',', $sreg_required) as $key) {
+	if (isset($sreg_required)) {
+		foreach (explode(',', $sreg_required) as $key) {
 			if (! isset($sreg[$key]))
 				continue;
 			$skey = 'sreg.' . $key;
@@ -402,6 +409,7 @@ function check_authentication_mode () {
 			$tokens .= sprintf("%s:%s\n", $skey, $sreg[$key]);
 			$keys[$skey] = $sreg[$key];
 			$fields[] = $skey;
+		}
 	}
 
 	// Look up the consumer's shared_secret and timeout
@@ -459,6 +467,9 @@ function checkid ( $wait ) {
 			? $_REQUEST['openid_sreg_optional']
 			: '';
 
+	// determine the cancel url
+	$cancel_url = wrap_param($return_to,'openid.mode=cancel');
+
 	// required and optional make no difference to us
 	$sreg_required .= ',' . $sreg_optional;
 
@@ -471,8 +482,8 @@ function checkid ( $wait ) {
 	}
 
 	// transfer the user to the url accept mode if they're paranoid
-	if ($profile['paranoid'] === true && (! session_is_registered('accepted_url') || $_SESSION['accepted_url'] != $trust_root)) {
-		$_SESSION['cancel_accept_url'] = wrap_param($return_to,'openid.mode=cancel');
+	if ($wait == 1 && isset($profile['paranoid']) && $profile['paranoid'] === true && (! session_is_registered('accepted_url') || $_SESSION['accepted_url'] != $trust_root)) {
+		$_SESSION['cancel_accept_url'] = $cancel_url;
 		$_SESSION['post_accept_url'] = $profile['req_url'];
 		$_SESSION['unaccepted_url'] = $trust_root;
 
@@ -502,9 +513,7 @@ function checkid ( $wait ) {
 		$_SESSION['auth_url'] = null;
 
 		if ($wait) {
-			unset($_SESSION['uniqid']);
-
-			$_SESSION['cancel_auth_url'] = $return_to;
+			$_SESSION['cancel_auth_url'] = $cancel_url;
 			$_SESSION['post_auth_url'] = $profile['req_url'];
 
 			debug('Transferring to authorization mode.');
@@ -1315,7 +1324,7 @@ function long($b) {
  * @return array
  */
 function new_assoc ( $expiration ) {
-	if (is_array($_SESSION)) {
+	if (isset($_SESSION) && is_array($_SESSION)) {
 		$sid = session_id();
 		$dat = session_encode();
 		session_write_close();
@@ -1385,7 +1394,7 @@ function secret ( $handle ) {
 	if (! preg_match('/^\w+$/', $handle))
 		return array(false, 0);
 
-	if (is_array($_SESSION)) {
+	if (isset($_SESSION) && is_array($_SESSION)) {
 		$sid = session_id();
 		$dat = session_encode();
 		session_write_close();
@@ -1486,12 +1495,11 @@ function sha1_20 ($v) {
 function str_diff_at ($a, $b) {
 	if ($a == $b)
 		return -1;
-	for ($i = 0; $i < strlen($a); $i++)
-		if ($a[$i] != $b[$i] || strlen($b) <= $i)
-			break;
-	if (strlen($b) > strlen($a))
-		$i++;
-	return $i;
+	$n = min(strlen($a), strlen($b));
+	for ($i = 0; $i < $n; $i++)
+		if ($a[$i] != $b[$i])
+			return $i;
+	return $n;
 }
 
 
@@ -1572,15 +1580,14 @@ function url_descends ( $child, $parent ) {
 	$pr_host = strtolower(strrev($parts['parent']['host']));
 
 	$break = str_diff_at($cr_host, $pr_host);
-	$number_of_dots = preg_match_all('/(\.)/', $pr_host, $chunks);
-        if ($break >= 0 && ($pr_host[$break] != '*' || $number_of_dots < 2))
+	// $dots = preg_match_all('/(\.)/', $pr_host, $chunks);
+	if ($break >= 0 && ($pr_host[$break] != '*' || substr_count(substr($pr_host, 0, $break), '.') < 2))
 		return false;
 
 	// now compare the paths
 	$break = str_diff_at($parts['child']['path'], $parts['parent']['path']);
-	$pb_char = $parts['parent']['path'][$break];
 	if ($break >= 0 
-	 && ($break < strlen($parts['parent']['path']) && $pb_char != '*')
+	 && ($break < strlen($parts['parent']['path']) && $parts['parent']['path'][$break] != '*')
 	 || ($break > strlen($parts['child']['path'])))
 		return false;
 
