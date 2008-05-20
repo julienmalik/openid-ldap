@@ -309,10 +309,10 @@ Several other configuration keys exist and can be set in the 'profile' array:
 
 'microid'	If you would like OpenID-LDAP-PHP to assert your ownership via 
 		MicroID tags, you can configure this key (either as a string or an
-		array). Any values must be complete URLs to the asserted owner.
+		array). Any values must be complete URI to the asserted owner.
 		One suggestion is to enter the value of the URL you are
 		delegating from (installation step 7). You can also use your
-		email address. In either case, be sure to prefix your URL
+		email address. In either case, be sure to prefix your URI
 		correctly with "mailto:" or "http://" etc...
 
 'pavatar'	If you would like OpenID-LDAP-PHP to assert your ownership of a 
