@@ -66,7 +66,7 @@ $GLOBALS['sreg'] = array (
  * @global array $GLOBALS['html']
  */
 $GLOBALS['html'] = array (
-	'page_head'		=> '<link href="style.css" rel="stylesheet" type="text/css">',
+	'page_head'		=> '<link href="style.css" rel="stylesheet" type="text/css" /><link rel="SHORTCUT ICON" href="images/openid.ico" />',
 	'page_title'		=> 'OpenID Provider',
 	'page_header'		=> '<img src="images/logo.gif" border="0"><br/>This is our <a href="http://openid.net/">OpenID</a> Provider endpoint.',
 	'welcome_text'		=> 'Dear, employee, as a valued member of our company you have an unique identifier (<font color="#FB6000"><b>%s</b></font>, for example). You can then use this identifier to log on to all Web sites that are OpenID-enabled (over 450 and counting, see the <a href="http://openiddirectory.com">Directory</a> for a partial listing of the sites). Please enter your company username bellow to find out what is your identifier. In order to login you have to provide your company password. If you do not have one yet, contact the Systems administartors.<br/><form method="post" action="showme.php">Username: <input type="text" id="login" class="loginurl" name="login"> <input type="submit" name="submit" value="Enter"></form>', // note "%s" which represents example OpenID
