@@ -272,7 +272,7 @@ function associate_mode () {
  * @global array $profile
  */
 function authorize_mode () {
-	global $profile;
+	global $profile, $proto;
 
 	// this is a user session
 	user_session();
@@ -286,7 +286,7 @@ function authorize_mode () {
 		wrap_html('This user does not exists! | <a href="' . $c . '">Cancel</a>');
 	}
 
-	// try to get the digest headers - what a PITA!
+	// try to get the auth headers
 	if (function_exists('apache_request_headers') && ini_get('safe_mode') == false) {
 		$arh = apache_request_headers();
 		$hdr = isset($arh['Authorization']) ? $arh['Authorization'] : null;
@@ -311,18 +311,18 @@ function authorize_mode () {
 	}
 
 	debug('Authorization header: ' . $hdr);
-	$digest = substr($hdr,0,6) == 'Basic '
+	$myauth = substr($hdr,0,6) == 'Basic '
 		?  substr($hdr, strpos($hdr, ' ') + 1)
 		: $hdr;
 
 	// is the user trying to log in?
-	if (! is_null($digest) && $profile['authorized'] === false) {
-		debug('Basic headers: ' . $digest);
+	if ($proto == "https" && ! is_null($myauth) && $profile['authorized'] === false) {
+		debug('Basic headers: ' . $myauth);
 		$hdr = array();
 
 		// decode the Basic authorization headers
 		// base64-encoded concatenation of the username, a colon, and the password
-		list($hdr['username'], $hdr['password']) = explode(':',base64_decode($digest));
+		list($hdr['username'], $hdr['password']) = explode(':',base64_decode($myauth));
 		
 		debug($hdr, 'Parsed basic auth headers:');
 
@@ -370,8 +370,8 @@ function authorize_mode () {
 			error_get($_SESSION['cancel_auth_url'], 'Too many password failures. Double check your authorization realm. You must restart your browser to try again.');
 		}
 
-	} elseif (is_null($digest) && $profile['authorized'] === false) {
-		error_500('Missing expected authorization header.');
+	} elseif ($proto = "http") {
+		error_500('You have to use secure connection (https) in order to login.');
 	}
 
 	// if we get this far the user is not authorized, so send the headers
@@ -1930,7 +1930,7 @@ if (! array_key_exists('auth_domain', $profile))
 if (! array_key_exists('auth_realm', $profile))
 	$profile['auth_realm'] = 'OpenID';
 
-// Determine the realm for digest authentication - DO NOT OVERRIDE
+// Determine the realm for authentication - DO NOT OVERRIDE
 $profile['php_realm'] = $profile['auth_realm'] . (ini_get('safe_mode') ? '-' . getmyuid() : '');
 
 // Set a default lifetime - the lesser of GC and cache time
