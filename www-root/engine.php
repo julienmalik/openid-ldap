@@ -370,7 +370,7 @@ function authorize_mode () {
 			error_get($_SESSION['cancel_auth_url'], 'Too many password failures. Double check your authorization realm. You must restart your browser to try again.');
 		}
 
-	} elseif ($proto = "http") {
+	} elseif ($proto == "http") {
 		error_500('You have to use secure connection (https) in order to login.');
 	}
 
