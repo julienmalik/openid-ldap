@@ -11,6 +11,11 @@ See LICENSE file for more details.
 CHANGE LOG
 **********
 
+Version 0.8.7
+- Fixed Authorization mode failure. Added mandatory SSL connection
+  requirement. Fixed SSL LDAP server connection on test phase. Added
+  VeriSign's SeatBelt Firefox plugin support (credits go to Kaspars).
+
 Version 0.8.6
 - Added Login form field styling. Added ActiveDirectory connect flag and
   CN attribute lookup after search flag. Added some Windows usage notes.
