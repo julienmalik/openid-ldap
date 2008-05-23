@@ -36,6 +36,8 @@ $GLOBALS['known'] = array(
 				 'login',
 				 'logout',
 				 'sendsreg',
+				 'sb_status',
+				 'sb_config',
 			 	 'test'),
 
 	'session_types'	=> array('',
@@ -150,7 +152,36 @@ function sendsreg_mode () {
         wrap_html('The client site you just have logged into has requested that you provide a registration info:<br/><b>' . $_SESSION['unaccepted_url'] . '</b><br/>' . $tokens . '<br/>Do you allow the transfer?<br/><a href="' . $yes . '">Yes</a> | <a href="' . $no . '">No</a>');
 }
 
-/** * Perform an association with a consumer
+/**
+ * Produce SeatBelt Login State XML if they are logged in or not
+ * @global array $profile
+ */
+function sb_status_mode () {
+	global $profile;
+
+	user_session();
+
+	if ($profile['authorized']) {
+    		// output XML with active username
+    		wrap_seatbelt_status($_SESSION['auth_username']);
+	} else {
+    		// output XML as no user has logged in
+    		wrap_seatbelt_status();
+	}
+}
+
+
+/** 
+ * Return SeatBelt configuration XML
+ * @global array $profile
+ */
+function sb_config_mode () {
+	wrap_seatbelt_config();
+}
+ 
+
+/**
+ * Perform an association with a consumer
  * @global array $known
  * @global array $profile
  * @global integer $g
@@ -1630,6 +1661,7 @@ function wrap_html ($message) {
 <title>' . $html['page_title'] . '</title>
 <link rel="openid.server" href="' . $profile['req_url'] . '" />
 <link rel="openid.delegate" href="' . $profile['idp_url'] . '" />
+<link rel="seatbelt.config" type="application/xml" href="' . $profile['idp_url'] . '?openid.mode=sb_config" />
 ' . implode("\n", $profile['opt_headers'])  . '
 <meta name="charset" content="' . $charset . '" />
 <meta name="robots" content="noindex,nofollow" />
@@ -1743,6 +1775,66 @@ function x_or ($a, $b) {
 	return $r;
 }
 
+
+/**
+ * Return SeatBelt state XML
+ * @global string $charset
+ * @param string $name
+ */
+function wrap_seatbelt_status ( $name = false ) {
+	global $charset, $profile;
+
+	header('Content-Type: application/xml; charset=' . $charset);
+	echo '<?xml version="1.0" encoding="UTF-8" ?><personaConfig version="1.0" serverIdentifier="' . $profile['idp_url'] . '">';
+
+	if ($name !== false) {
+    		echo '<persona displayName="' . $name . '">' . $profile['idp_url'] . '</persona>';
+	}
+
+	echo '</personaConfig>';
+	exit(0);
+}
+
+
+/**
+ * Return SeatBelt configuration XML file
+ * @global string $charset
+ * @global array $profile
+ */
+function wrap_seatbelt_config () {
+	global $charset, $profile, $proto, $reldir, $html;
+	
+	$current_url = $proto . '://' . $_SERVER['SERVER_NAME'] . $reldir;
+
+	$out = '<?xml version="1.0" encoding="UTF-8"?>
+<opConfig version="1.0" serverIdentifier="' . $profile['idp_url'] . '">
+  <configRevision></configRevision>
+  <title>' . $html['title'] . '</title>
+  <description>' . $html['seatbelt_text'] . '</description>
+  <loginUrl>' . $profile["idp_url"] . '?openid.mode=login</loginUrl>
+  <welcomeUrl>' . $profile["idp_url"] . '</welcomeUrl>
+  <loginStateUrl>' . $profile["idp_url"] . '?openid.mode=sb_status</loginStateUrl>
+  <opDomain></opDomain>
+  <opCertSHA1Hash></opCertSHA1Hash>
+  <opCertCommonName></opCertCommonName>
+  <settingsIconUrl>' . $current_url . '/images/seatbelt/icon-logo.png</settingsIconUrl>
+  <toolbarGrayIconUrl>' . $current_url . '/images/seatbelt/icon-gray.png</toolbarGrayIconUrl>
+  <toolbarHighIconUrl>' . $current_url . '/images/seatbelt/icon-high.png</toolbarHighIconUrl>
+  <toolbarGrayBackground>#D6D6D6</toolbarGrayBackground>
+  <toolbarHighBackground>#EEEEEE</toolbarHighBackground>
+  <toolbarLoginBackground>#74D174</toolbarLoginBackground>
+  <toolbarGrayBorder>#7C7C7C</toolbarGrayBorder>
+  <toolbarHighBorder>#009900</toolbarHighBorder>
+  <toolbarLoginBorder>#2B802B</toolbarLoginBorder>
+  <toolbarGrayText>#666666</toolbarGrayText>
+  <toolbarHighText>#009900</toolbarHighText>
+  <toolbarLoginText>#FFFFFF</toolbarLoginText>    
+</opConfig>';
+
+	header('Content-Type: application/xml; charset=' . $charset);
+	echo $out;
+	exit(0);
+}
 
 
 /*
