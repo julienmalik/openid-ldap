@@ -106,6 +106,9 @@ function test_ldap ($username, $password) {
         if ($username != "") {
                 $ds = ldap_connect($ldap['primary']) or $ds = ldap_connect($ldap['fallback']);
                 if ($ds) {
+			ldap_set_option($ds,LDAP_OPT_PROTOCOL_VERSION,$ldap['protocol']);
+			if ($ldap['isad'] == true) ldap_set_option($ds,LDAP_OPT_REFERRALS,0);
+
                         if (ldap_bind($ds,sprintf($ldap['testdn'],$username),$password)) $no = "ok";
                         ldap_close($ds);
                 }
