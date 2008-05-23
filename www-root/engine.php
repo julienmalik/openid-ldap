@@ -1809,7 +1809,7 @@ function wrap_seatbelt_config () {
 	$out = '<?xml version="1.0" encoding="UTF-8"?>
 <opConfig version="1.0" serverIdentifier="' . $profile['idp_url'] . '">
   <configRevision></configRevision>
-  <title>' . $html['title'] . '</title>
+  <title>' . $html['page_title'] . '</title>
   <description>' . $html['seatbelt_text'] . '</description>
   <loginUrl>' . $profile["idp_url"] . '?openid.mode=login</loginUrl>
   <welcomeUrl>' . $profile["idp_url"] . '</welcomeUrl>
@@ -1817,9 +1817,9 @@ function wrap_seatbelt_config () {
   <opDomain></opDomain>
   <opCertSHA1Hash></opCertSHA1Hash>
   <opCertCommonName></opCertCommonName>
-  <settingsIconUrl>' . $current_url . '/images/seatbelt/icon-logo.png</settingsIconUrl>
-  <toolbarGrayIconUrl>' . $current_url . '/images/seatbelt/icon-gray.png</toolbarGrayIconUrl>
-  <toolbarHighIconUrl>' . $current_url . '/images/seatbelt/icon-high.png</toolbarHighIconUrl>
+  <settingsIconUrl>' . $current_url . 'images/seatbelt/icon-logo.png</settingsIconUrl>
+  <toolbarGrayIconUrl>' . $current_url . 'images/seatbelt/icon-gray.png</toolbarGrayIconUrl>
+  <toolbarHighIconUrl>' . $current_url . 'images/seatbelt/icon-high.png</toolbarHighIconUrl>
   <toolbarGrayBackground>#D6D6D6</toolbarGrayBackground>
   <toolbarHighBackground>#EEEEEE</toolbarHighBackground>
   <toolbarLoginBackground>#74D174</toolbarLoginBackground>
