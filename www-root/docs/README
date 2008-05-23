@@ -25,6 +25,10 @@ OpenID-LDAP-PHP is NOT compatible with Suhosin or other hardened PHP systems
 NOTE: User authentication is done using HTTP Basic authentication, so your 
       password is transmitted over the wire in plain text, base64 encoded. Thus 
       we STRONGLY RECOMMEND using SSL for your hosting (https://yourdomain.com)
+      
+      In fact, if you are not using SSL the Authorization OpenID mode *will*
+      fail with an error message. Since OpenID-LDAP-PHP version 0.8.7 you are
+      required to use SSL connection.
 
       'Smart Mode' OpenID authentication requires the use of "big math"
       functions. If you do not have bcmath or GMP available, you can use a built
