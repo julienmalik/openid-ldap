@@ -213,6 +213,12 @@ that you use a server that you own and control.
    Make sure you replace 'host' and 'dir' above with corresponding values from
    your setup (i.e. 'yourdomain.com' and 'some/path', for example).
 
+   The SSL host definition must be using the IP and not the hostname. It
+   should look like: <VirtualHost 192.168.1.1:443>. If you fail to do so
+   you may spend quite some time why mod_rewrite is doing nothing.
+
+   Don't forget to change in httpd.conf: "AllowOverride None" to
+   "AllowOverride All" (it may appear several times).
 
 9) Set right permissions to ldap.php file because it contains your LDAP password
    
