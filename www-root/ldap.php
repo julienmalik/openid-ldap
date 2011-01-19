@@ -27,6 +27,7 @@ $GLOBALS['ldap'] = array (
 	'binddn'		=> 'cn=<name>,cn=users,dc=domain,dc=local',
 	'password'		=> '<pass>',
 	# User account
+	'autodn'		=> false, // extract DN from search result, ignore 'testdn'
 	'testdn'		=> 'cn=%s,cn=users,dc=domain,dc=local',
 	# Searching data
 	'searchdn'		=> 'cn=users,dc=domain,dc=local',
@@ -41,7 +42,12 @@ $GLOBALS['ldap'] = array (
 #	'language'		=> '',
 #	'timezone'		=> '',
 #	'gender'		=> '',
-	'country'		=> 'c'
+	'country'		=> 'c',
+
+	# Default SREG values (default server settings)
+	'def_language'		=> 'en',
+	'def_postcode'		=> '1000',
+	'def_timezone'		=> 'Europe/Sofia'
 );
 
 
@@ -69,6 +75,7 @@ function find_ldap ($username) {
                                 $no = "ok";
                                 $profile['user_found'] = true;
 				if ($ldap['lookupcn'] == true) $profile['auth_cn'] = $info[0]['cn'][0];
+				if ($ldap['autodn'] == true) $ldap['testdn'] = $info['0']['dn'];
 
 				# Populate user information from LDAP - if (array_key_exists('keyname', $ldap))...
 				$sreg['nickname'] = $info[0][$ldap['nickname']][0];
@@ -85,9 +92,9 @@ function find_ldap ($username) {
 				$sreg['country']  = $info[0][$ldap['country']][0];
 
 				# Values not obtained from LDAP
-				$sreg['language'] = 'en';
-				$sreg['postcode'] = '1000';
-				$sreg['timezone'] = 'Europe/Sofia';
+				$sreg['language'] = $ldap['def_language'];
+				$sreg['postcode'] = $ldap['def_postcode'];
+				$sreg['timezone'] = $ldap['def_timezone'];
                         }
                         ldap_close($ds);
                 }
@@ -109,7 +116,11 @@ function test_ldap ($username, $password) {
 			ldap_set_option($ds,LDAP_OPT_PROTOCOL_VERSION,$ldap['protocol']);
 			if ($ldap['isad'] == true) ldap_set_option($ds,LDAP_OPT_REFERRALS,0);
 
-                        if (ldap_bind($ds,sprintf($ldap['testdn'],$username),$password)) $no = "ok";
+                        if ($ldap['autodn'] == true) {
+				if (ldap_bind($ds,$ldap['testdn'],$password)) $no = "ok";
+			} else {
+				if (ldap_bind($ds,sprintf($ldap['testdn'],$username),$password)) $no = "ok";
+			}
                         ldap_close($ds);
                 }
         }
