@@ -322,8 +322,10 @@ function authorize_mode () {
 
 		// decode the Basic authorization headers
 		// base64-encoded concatenation of the username, a colon, and the password
-		list($hdr['username'], $hdr['password']) = explode(':',base64_decode($myauth));
-		
+		$myauth = base64_decode($myauth);
+		$hdr['username'] = substr($myauth, 0, strpos($myauth, ':'));
+		$hdr['password'] = substr($myauth, strpos($myauth, ':') + 1);
+
 		debug($hdr, 'Parsed basic auth headers:');
 
 		if (! isset($_SESSION['failures']))
