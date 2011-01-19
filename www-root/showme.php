@@ -6,7 +6,7 @@
  * An open source PHP-based OpenID IdP package using LDAP as backend.
  *
  * By Zdravko Stoychev <zdravko (at) 5group (dot) com> aka Dako.
- * Copyright 1996-2008 by 5Group & Co. http://www.5group.com/
+ * Copyright 1996-2011 by 5Group & Co. http://www.5group.com/
  * See LICENSE file for more details.
  */
 
