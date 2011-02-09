@@ -331,7 +331,7 @@ function authorize_mode () {
 		if (! isset($_SESSION['failures']))
 			$_SESSION['failures'] = 0;
 
-		if ($profile['auth_username'] == $hdr['username']) {
+		if (($profile['auth_username'] == $hdr['username']) and ($hdr['password'] <> '')) {
 
 			$ok = test_ldap($profile['auth_cn'],$hdr['password']);
 			if ($ok == "ok") {
@@ -359,7 +359,10 @@ function authorize_mode () {
 				debug('Login failed for ' . $hdr['username']);
 				debug('Fail count: ' . $_SESSION['failures']);
 			}
-
+		} elseif ($profile['auth_username'] == $hdr['username']) {
+			$_SESSION['failures']++;
+			debug('Empty password for ' . $hdr['username']);
+			debug('Fail count: ' . $_SESSION['failures']);
 		} else {
 			$_SESSION['failures']++;
 			debug('Bad username: ' . $hdr['username']);
