@@ -37,8 +37,9 @@ $GLOBALS['profile'] = array(
 #	'paranoid'	=>	false, # EXPERIMENTAL
 #	'force_ssl'	=>	false, # EXPERIMENTAL
 
-	# Debug Config - Please see README before setting these
+	# Logging Config - Please see README before setting these
 #	'debug'		=>	false,
+#	'authlog'	=>	false,
 #	'logfile'	=>	'/var/log/openid'
 );
 
@@ -51,7 +52,7 @@ $GLOBALS['profile'] = array(
 $GLOBALS['sreg'] = array (
 #       'nickname'              => 'Joe',
 #       'email'                 => 'joe@example.com',
-#	'fullname'		=> 'Joe Example',
+#       'fullname'              => 'Joe Example',
 #       'dob'                   => '1970-10-31',
 #       'gender'                => 'M',
 #       'postcode'              => '22000',
@@ -66,7 +67,7 @@ $GLOBALS['sreg'] = array (
  * @global array $GLOBALS['html']
  */
 $GLOBALS['html'] = array (
-	'page_head'		=> '<link href="style.css" rel="stylesheet" type="text/css" /><link rel="SHORTCUT ICON" href="images/openid.ico" />',
+	'page_head' 		=> '<link href="style.css" rel="stylesheet" type="text/css" /><link rel="SHORTCUT ICON" href="images/openid.ico" />',
 	'page_title'		=> 'OpenID Provider',
 	'page_header'		=> '<img src="images/logo.gif" border="0"><br/>This is our <a href="http://openid.net/">OpenID</a> Provider endpoint.',
 	'seatbelt_text'		=> 'Our OpenID Provider endpoint.',

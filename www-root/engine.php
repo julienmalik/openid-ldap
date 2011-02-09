@@ -326,6 +326,14 @@ function authorize_mode () {
 		$hdr['username'] = substr($myauth, 0, strpos($myauth, ':'));
 		$hdr['password'] = substr($myauth, strpos($myauth, ':') + 1);
 
+		if ( isset($_SERVER["REMOTE_ADDR"]) ) {
+			$hdr['clientip'] = $_SERVER["REMOTE_ADDR"];
+		} elseif ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ) {
+			$hdr['clientip'] = $_SERVER["HTTP_X_FORWARDED_FOR"];
+		} elseif ( isset($_SERVER["HTTP_CLIENT_IP"]) ) {
+			$hdr['clientip'] = $_SERVER["HTTP_CLIENT_IP"];
+		}
+
 		debug($hdr, 'Parsed basic auth headers:');
 
 		if (! isset($_SESSION['failures']))
@@ -352,21 +360,25 @@ function authorize_mode () {
 
 				// return to the refresh url if they get in
 				wrap_refresh($_SESSION['post_auth_url']);
+				authlog('Login passed for ' . $hdr['username'] . ' at ' . $hdr['clientip']);
 
 			// failed login
 			} else {
 				$_SESSION['failures']++;
 				debug('Login failed for ' . $hdr['username']);
 				debug('Fail count: ' . $_SESSION['failures']);
+				authlog('Login FAILED for ' . $hdr['username'] . ' at ' . $hdr['clientip']);
 			}
 		} elseif ($profile['auth_username'] == $hdr['username']) {
 			$_SESSION['failures']++;
 			debug('Empty password for ' . $hdr['username']);
 			debug('Fail count: ' . $_SESSION['failures']);
+			authlog('Login FAILED for ' . $hdr['username'] . ' at ' . $hdr['clientip']);
 		} else {
 			$_SESSION['failures']++;
 			debug('Bad username: ' . $hdr['username']);
 			debug('Fail count: ' . $_SESSION['failures']);
+			authlog('Login FAILED for ' . $hdr['username'] . ' at ' . $hdr['clientip']);
 		}
 
 		// does this make too many failures?
@@ -1215,7 +1227,7 @@ function debug ($x, $m = null) {
 		return true;
 
 	if (! is_writable(dirname($profile['logfile'])) &! is_writable($profile['logfile']))
-		error_500('Cannot write to debug log: ' . $profile['logfile']);
+		error_500('Cannot write to log file: ' . $profile['logfile']);
 
 	if (is_array($x)) {
 		ob_start();
@@ -1227,6 +1239,23 @@ function debug ($x, $m = null) {
 	}
 
 	error_log($x . "\n", 3, $profile['logfile']);
+}
+
+
+/**
+ * Auth logging
+ * @param string $m 
+ */
+function authlog ($m) {
+	global $profile;
+
+	if (! isset($profile['authlog']) || $profile['authlog'] === false)
+		return true;
+
+	if (! is_writable(dirname($profile['logfile'])) &! is_writable($profile['logfile']))
+		error_500('Cannot write to log file: ' . $profile['logfile']);
+
+	error_log($m . "\n\n", 3, $profile['logfile']);
 }
 
 
