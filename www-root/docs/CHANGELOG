@@ -11,6 +11,9 @@ See LICENSE file for more details.
 CHANGE LOG
 **********
 
+Version 0.8.9
+- Maintenance and security update.
+
 Version 0.8.8
 - Added Auto-DN Patch by Barry Stewart <bstewart@aptima.com>, Colon 
   patch by Kozlov Ilya <unicast.ru@gmail.com>, and SREG default server
