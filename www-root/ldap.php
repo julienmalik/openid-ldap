@@ -110,7 +110,8 @@ function find_ldap ($username) {
 function test_ldap ($username, $password) {
 	global $ldap;
         $no = "no";
-        if ($username != "") {
+        # Ignore empty password as well
+        if (($username != "") && ($password != "")) {
                 $ds = ldap_connect($ldap['primary']) or $ds = ldap_connect($ldap['fallback']);
                 if ($ds) {
 			ldap_set_option($ds,LDAP_OPT_PROTOCOL_VERSION,$ldap['protocol']);

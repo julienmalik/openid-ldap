@@ -232,7 +232,7 @@ function associate_mode () {
 	);
 
 	// If I can't handle bigmath, default to plaintext sessions
-	if (in_array($session_type, $known['bigmath_types']) && $profile['use_bigmath'] === false)
+	if (in_array($session_type, $known['bigmath_types']) && $profile['use_bigmath'] == false)
 		$session_type = null;
 
 	// Add response keys based on the session type
@@ -316,7 +316,7 @@ function authorize_mode () {
 		: $hdr;
 
 	// is the user trying to log in?
-	if ($proto == "https" && ! is_null($myauth) && $profile['authorized'] === false) {
+	if ($proto == "https" && ! is_null($myauth) && $profile['authorized'] == false) {
 		debug('Basic headers: ' . $myauth);
 		$hdr = array();
 
@@ -339,7 +339,7 @@ function authorize_mode () {
 		if (! isset($_SESSION['failures']))
 			$_SESSION['failures'] = 0;
 
-		if (($profile['auth_username'] == $hdr['username']) and ($hdr['password'] <> '')) {
+		if (($profile['auth_username'] == $hdr['username']) && ($hdr['password'] != '')) {
 
 			$ok = test_ldap($profile['auth_cn'],$hdr['password']);
 			if ($ok == "ok") {
@@ -530,7 +530,7 @@ function checkid ( $wait ) {
 	}
 
 	// transfer the user to the url accept mode if they're paranoid
-	if ($wait == 1 && isset($profile['paranoid']) && $profile['paranoid'] === true && (! session_is_registered('accepted_url') || $_SESSION['accepted_url'] != $trust_root)) {
+	if ($wait == 1 && isset($profile['paranoid']) && $profile['paranoid'] == true && (! session_is_registered('accepted_url') || $_SESSION['accepted_url'] != $trust_root)) {
 		$_SESSION['cancel_accept_url'] = $cancel_url;
 		$_SESSION['post_accept_url'] = $profile['req_url'];
 		$_SESSION['unaccepted_url'] = $trust_root;
@@ -555,7 +555,7 @@ function checkid ( $wait ) {
 	);
 
 	// if the user is not logged in, transfer to the authorization mode
-	if ($profile['authorized'] === false || $identity != $_SESSION['auth_url']) {
+	if ($profile['authorized'] == false || $identity != $_SESSION['auth_url']) {
 		// users can only be logged in to one url at a time
 		$_SESSION['auth_username'] = null;
 		$_SESSION['auth_url'] = null;
@@ -576,7 +576,7 @@ function checkid ( $wait ) {
 	// the user is logged in
 	} else {
 		// transfer the user to the sreg accept mode if they're paranoid
-		if ($profile['paranoid'] === true && $sreg_required != "," && (! session_is_registered('accepted_sreg') || $_SESSION['accepted_sreg'] != $sreg_required)) {
+		if ($profile['paranoid'] == true && $sreg_required != "," && (! session_is_registered('accepted_sreg') || $_SESSION['accepted_sreg'] != $sreg_required)) {
 			$_SESSION['cancel_accept_url'] = wrap_param($return_to,'openid.mode=cancel');
 			$_SESSION['post_accept_url'] = $profile['req_url'];
 			$_SESSION['unaccepted_sreg'] = $sreg_required;
@@ -740,13 +740,13 @@ function no_mode () {
 	$demo_name = $proto . '://' . $_SERVER['SERVER_NAME'] . $reldir . 'joe';
         $user_name = ($sreg['fullname'] == '') ? $sreg['nickname'] : $sreg['fullname'];
 
-	$stat_html = ($profile['authorized'] === true  ? ' (<font color="#FB6000">logged in</font>)' : null);
-	$auth_html = ($profile['authorized'] === false ? ' | <a href="' . wrap_param($profile['idp_url'],'openid.mode=login') . '">Login</a>' : null);
-	$test_html = ($profile['allow_test'] === true  ? ' | <a href="' . wrap_param($profile['idp_url'],'openid.mode=test') . '">Test</a>' : null);
+	$stat_html = ($profile['authorized'] == true  ? ' (<font color="#FB6000">logged in</font>)' : null);
+	$auth_html = ($profile['authorized'] == false ? ' | <a href="' . wrap_param($profile['idp_url'],'openid.mode=login') . '">Login</a>' : null);
+	$test_html = ($profile['allow_test'] == true  ? ' | <a href="' . wrap_param($profile['idp_url'],'openid.mode=test') . '">Test</a>' : null);
 
 	$menu_html = '<a href="' . $proto . '://' . $_SERVER['SERVER_NAME'] . $reldir . '">Home</a>' . $auth_html . $test_html . ' | <a href="http://openid.net/what/">Help</a>';
 
-	$name_html = ($profile['user_found'] === true ? 'Welcome, <font color="green">' . $user_name . '</font>! Your OpenID is:<br/><img src="images/openid.gif" border="0" align="top"> <b>' . $profile['idp_url'] . '</b>' . $stat_html . '<br/><br/>Your current options are: ' . $menu_html : '<font color="red">' . sprintf($html['user_not_found'],$profile['auth_username']) . '</font>');
+	$name_html = ($profile['user_found'] == true ? 'Welcome, <font color="green">' . $user_name . '</font>! Your OpenID is:<br/><img src="images/openid.gif" border="0" align="top"> <b>' . $profile['idp_url'] . '</b>' . $stat_html . '<br/><br/>Your current options are: ' . $menu_html : '<font color="red">' . sprintf($html['user_not_found'],$profile['auth_username']) . '</font>');
 
 	$sign_html = ($profile['auth_username'] != "" ? $name_html : 'Realm: <b>' . $profile['auth_realm'] . '</b><br/><br/>' . sprintf($html['welcome_text'],$demo_name) . '<br/><br/>' . $html['welcome_help']);
 
@@ -1223,7 +1223,7 @@ function bin ($n) {
 function debug ($x, $m = null) {
 	global $profile;
 
-	if (! isset($profile['debug']) || $profile['debug'] === false)
+	if (! isset($profile['debug']) || $profile['debug'] == false)
 		return true;
 
 	if (! is_writable(dirname($profile['logfile'])) &! is_writable($profile['logfile']))
@@ -1249,7 +1249,7 @@ function debug ($x, $m = null) {
 function authlog ($m) {
 	global $profile;
 
-	if (! isset($profile['authlog']) || $profile['authlog'] === false)
+	if (! isset($profile['authlog']) || $profile['authlog'] == false)
 		return true;
 
 	if (! is_writable(dirname($profile['logfile'])) &! is_writable($profile['logfile']))
@@ -1614,7 +1614,7 @@ function url_descends ( $child, $parent ) {
 
 	foreach (array('parent', 'child') as $name) {
 		$parts[$name] = @parse_url($$name);
-		if ($parts[$name] === false)
+		if ($parts[$name] == false)
 			return false;
 
 		$keys[$name] = array_keys($parts[$name]);
@@ -1766,11 +1766,11 @@ function wrap_refresh ($url) {
 
 	$pos = strpos($url, 'openid.mode=authorize');
 
-	if ($pos === false) {
+	if ($pos == false) {
 		$site = '';
 	} else {
                 $user_name = ($sreg['fullname'] == '') ? $sreg['nickname'] : $sreg['fullname'];
-		$party_url = ($profile['paranoid'] === true ? $_SESSION['accepted_url'] : $_SESSION['cancel_auth_url']);
+		$party_url = ($profile['paranoid'] == true ? $_SESSION['accepted_url'] : $_SESSION['cancel_auth_url']);
 		$site = '<p>Hello, <font color="green">' . $user_name . '</font>! You are going to confirm your identity to a client site with URL:<br/><b>' . $party_url . '</b></p>';
 	}
 
@@ -1821,7 +1821,7 @@ function wrap_seatbelt_status ( $name = false ) {
 	header('Content-Type: application/xml; charset=' . $charset);
 	echo '<?xml version="1.0" encoding="UTF-8" ?><personaConfig version="1.0" serverIdentifier="' . $profile['idp_url'] . '">';
 
-	if ($name !== false) {
+	if ($name != false) {
     		echo '<persona displayName="' . $name . '">' . $profile['idp_url'] . '</persona>';
 	}
 
@@ -1905,7 +1905,7 @@ debug("Port: " . $_SERVER['SERVER_PORT'] . ' => ' . $GLOBALS['port']);
  * @name $proto
  * @global string $GLOBALS['proto']
  */
-$GLOBALS['proto'] = (($profile['force_ssl'] === true) || ($_SERVER['SERVER_PORT'] == 443) || (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on')) ? 'https' : 'http';
+$GLOBALS['proto'] = (($profile['force_ssl'] == true) || ($_SERVER['SERVER_PORT'] == 443) || (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on')) ? 'https' : 'http';
 debug("Proto: " . $GLOBALS['proto']);
 
 /**
